@@ -1,28 +1,5 @@
-'use strict';
-
-/**
- * Month-Picker
- *
- * Properties:
- * @years:
- *  - array: [2013, 2015, 2016]
- *  - number: 5 (last 4 years and this year)
- *  - object: {min: 2013, max: 2016} (from 2013 to 2016); {min: 2013} (from 2013 to this year); {max: 2015} (5 years to 2015)
- * @value: default value for picking a single month, e.g. {year: 2015: month: 11}
- * @range: default value for picking a span of months, e.g. {from: {year: 2014: month: 7}, to: {year: 2015: month: 11}}
- * @lang: language texts
- *  - array: array of months' texts, e.g. ['Jan', 'Feb', 'Mar', 'Spr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
- *  - object: including array of months' texts and other display texts
- *      e.g. {from: "From:", to: "To:", months: [...]}
- * @theme: theme setting of month-picker; 2 options (light/dark); default theme is light
- */
-
-
-
-
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import Tappable from 'react-tapper'
+import * as React from 'react'
+import * as Tappable from 'react-tappable';
 
 
 const isBrowser = (typeof window !== "undefined" && typeof document !== "undefined")
@@ -31,22 +8,22 @@ const isBrowser = (typeof window !== "undefined" && typeof document !== "undefin
 const __MIN_VALID_YEAR = 1
 
 
-function mapToArray(num, callback) {
-    let arr = []
+function mapToArray(num: number, callback) {
+    let arr: any = []
     for (let i = 0; i <  num; i++) {
         arr.push( callback(i) )
     }
     return arr
 }
 
-function getYearMon(year, min, max) {
-    let ym = typeof year === 'object' && year.year ? {year: year.year, month: year.month} : {year}
+function getYearMon(year: Month | number, min?: number, max?: number) {
+    let ym = (typeof year === 'object' && year.year )? {year: year.year, month: year.month} : {year}
     ym.min = min || 1
     ym.max = max || 12
     return ym
 }
 
-function getYearsByNum(n, minYear) {
+function getYearsByNum(n: number, minYear?: number) {
     let maxYear = (new Date()).getFullYear()
     // n is number of years
     if (n && n > 0 && n < 1000) {
@@ -70,14 +47,13 @@ function getYearsByNum(n, minYear) {
     })
 }
 
-function getYearArray(years) {
+function getYearArray(years: Years) {
     if (Array.isArray(years))
         return years.map((y, i) => {
             return getYearMon(y)
         })
     if ((typeof years === 'object')) {
-        let n = 0, min = 0
-            , ymin = getYearMon(years.min), ymax = getYearMon(years.max)
+        let n = 0, min = 0, ymin = getYearMon(years.min), ymax = getYearMon(years.max)
         if ((typeof ymin.year === 'number') && ymin.year > __MIN_VALID_YEAR)
             min = ymin.year
         if ((typeof ymax.year === 'number') && ymax.year >= min)
@@ -96,24 +72,40 @@ function getYearArray(years) {
         return getYearsByNum(5)
 }
 
+type Month = {year: number, month: number}
+type Years = Array<number> | number | Month | {min: Month, max: Month}
 
+type Range = {
+    from: Month,
+    to: Month
+}
+type Language = Array<string> | {from: string, to: string, months: Array<string>}
+export interface MonthPickerProps {
+    years: Years;
+    value: Month;
+    range: Range;
+    lang: Language;
+    onChange: (year: number, month: number, index: number) => void;
+    onYearChange: (year: number) => void;
+    onShow: () => void;
+    onDismiss: (value: Month) => void;
+    onClickAway: (e: Event) => void;
+    theme: 'light' | 'dark';
+    show: boolean;
+    className: string;
+}
+interface State {
+    values: any;
+    labelYears: any;
+    years: any;
+    yearIndexes: any;
+    closeable: boolean;
+    showed: boolean;
+    lastRange: Range;
+    lastValue: Month;
+}
+export default class MonthPicker extends React.Component<MonthPickerProps, State> {
 
-
-
-export default class MonthPicker extends Component {
-    static propTypes = {
-        years: PropTypes.oneOfType([PropTypes.array, PropTypes.object, PropTypes.number]),
-        value: PropTypes.object,
-        range: PropTypes.object,
-        lang: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-        onChange: PropTypes.func,
-        onYearChange: PropTypes.func,
-        onShow: PropTypes.func,
-        onDismiss: PropTypes.func,
-        onClickAway: PropTypes.func,
-        theme: PropTypes.string,
-        show: PropTypes.bool,
-    }
     static defaultProps = {
         years: getYearsByNum(5),
         onChange(year, month, idx) {},
@@ -121,7 +113,7 @@ export default class MonthPicker extends Component {
         show: false,
     }
 
-    constructor(props, context) {
+    constructor(props: MonthPickerProps, context) {
         super(props, context)
 
         const yearArr = getYearArray(this.props.years)
@@ -203,7 +195,7 @@ export default class MonthPicker extends Component {
     }
 
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: MonthPickerProps) {
         const yearArr = getYearArray(nextProps.years)
             , yearIndexes = this.state.yearIndexes
             , nextValues = nextProps.range || nextProps.value //|| this.props.range || this.props.value
@@ -231,7 +223,7 @@ export default class MonthPicker extends Component {
         }
     }
 
-    optionPad(padIndex) {
+    optionPad(padIndex: number): JSX.Element {
         let values = this.state.values
             , value = values[padIndex]
             , labelYears = this.state.labelYears
@@ -311,7 +303,7 @@ export default class MonthPicker extends Component {
     }
 
     render() {
-        const pads = []
+        const pads: JSX.Element[] = []
         let popupClass = ''
         if (this.state.values.length > 1) {
             pads.push( this.optionPad(0), this.optionPad(1) )
@@ -355,12 +347,12 @@ export default class MonthPicker extends Component {
     }
 
     _onShow() {
-        setTimeout(function() {this.state.closeable = true;}.bind(this), 250)
+        setTimeout(()  => this.setState({closeable: true}), 250);
         this.setState({ showed: true })
         this.props.onShow && this.props.onShow()
     }
 
-    _onDismiss(s) {
+    _onDismiss(s?: any) {
         this.setState(Object.assign({showed: false, loading: false}, s))
         this.props.onDismiss && this.props.onDismiss(this.value())
     }

@@ -1,8 +1,8 @@
 {
-  "name": "react-month-picker",
+  "name": "@atto-byte/react-month-picker",
   "description": "Month-Picker Component offers a popup month selection panel with responsive layouts.",
-  "url": "https://github.com/nickeljew/react-month-picker",
-  "homepage": "https://github.com/nickeljew/react-month-picker",
+  "url": "https://github.com/atto-byte/react-month-picker",
+  "homepage": "https://github.com/atto-byte/react-month-picker",
   "keywords": [
     "month-select",
     "month-option",
@@ -11,13 +11,16 @@
     "react-component",
     "react"
   ],
-  "author": "Nickel Jianhui Zhu <nickeljew@hotmail.com>",
-  "version": "1.3.8",
+  "author": "Nickel Jianhui Zhu <atto-byte@hotmail.com>",
+  "version": "1.3.9",
   "license": "MIT",
   "private": false,
   "main": "lib/month-picker.js",
+  "types": "./lib/month-picker.d.ts",
   "style": "css/month-picker.css",
-  "scripts": {},
+  "scripts": {
+    "build": "rimraf -rf ./lib && tsc"
+  },
   "babel": {
     "plugins": [
       "transform-react-jsx",
@@ -29,14 +32,18 @@
     ]
   },
   "dependencies": {
+    "react-tappable": "^1.0.4",
     "react-tapper": "^0.1.16"
   },
   "peerDependencies": {
     "prop-types": "^15.6.0",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3"
   },
   "devDependencies": {
+    "@types/react": "^16.8.6",
+    "@types/rimraf": "^2.0.2",
+    "@types/typescript": "^2.0.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
@@ -53,13 +60,18 @@
     "grunt-sass": "^2.0.0",
     "grunt-webpack": "^3.0.2",
     "prop-types": "^15.6.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "rimraf": "^2.6.3",
+    "tslint": "5.12.1",
+    "tslint-config-prettier": "1.17.0",
+    "tslint-eslint-rules": "5.4.0",
+    "typescript": "^3.3.3333",
     "webpack": "^2.4.1",
     "webpack-dev-server": "^2.9.5"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nickeljew/react-month-picker.git"
+    "url": "https://github.com/atto-byte/react-month-picker.git"
   }
 }

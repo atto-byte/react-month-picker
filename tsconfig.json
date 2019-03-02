@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+      "baseUrl": ".",
+      "paths": { "*": ["types/*"] },
+    "outDir": "./lib",
+    "target": "es5",
+    "module": "commonjs",
+    "strictNullChecks": true,
+    "removeComments": true,
+    "declaration": true,
+    "sourceMap": true,
+    "noUnusedLocals": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "alwaysStrict": true,
+    "noUnusedParameters": true,
+    "jsx": "react",
+    "typeRoots": [
+      "index.d.ts",
+      "node_modules/@types"
+    ]
+  },
+  "include": [
+    "./src/**/*.tsx",
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
