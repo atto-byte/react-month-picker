@@ -3,10 +3,11 @@ declare type Month = {
     year: number;
     month: number;
 };
-declare type Years = Array<number> | number | Month | {
+declare type MinMaxMonth = {
     min: Month;
     max: Month;
 };
+declare type Years = Array<number> | number | MinMaxMonth;
 declare type Range = {
     from: Month;
     to: Month;
@@ -19,16 +20,16 @@ declare type Language = Array<string> | {
 export interface MonthPickerProps {
     years: Years;
     value: Month;
-    range: Range;
-    lang: Language;
-    onChange: (year: number, month: number, index: number) => void;
-    onYearChange: (year: number) => void;
-    onShow: () => void;
-    onDismiss: (value: Month) => void;
-    onClickAway: (e: Event) => void;
-    theme: 'light' | 'dark';
-    show: boolean;
-    className: string;
+    range?: Range;
+    lang?: Language;
+    onChange?: (year: number, month: number, index: number) => void;
+    onYearChange?: (year: number) => void;
+    onShow?: () => void;
+    onDismiss?: (value: Month) => void;
+    onClickAway?: (e: Event) => void;
+    theme?: 'light' | 'dark';
+    show?: boolean;
+    className?: string;
 }
 interface State {
     values: any;

@@ -1,5 +1,4 @@
 import * as React from 'react'
-import * as Tappable from 'react-tappable';
 
 
 const isBrowser = (typeof window !== "undefined" && typeof document !== "undefined")
@@ -17,7 +16,7 @@ function mapToArray(num: number, callback) {
 }
 
 function getYearMon(year: Month | number, min?: number, max?: number) {
-    let ym = (typeof year === 'object' && year.year )? {year: year.year, month: year.month} : {year}
+    let ym: any = (typeof year === 'object' && year.year ) ? {year: year.year, month: year.month} : {year}
     ym.min = min || 1
     ym.max = max || 12
     return ym
@@ -52,12 +51,18 @@ function getYearArray(years: Years) {
         return years.map((y, i) => {
             return getYearMon(y)
         })
-    if ((typeof years === 'object')) {
-        let n = 0, min = 0, ymin = getYearMon(years.min), ymax = getYearMon(years.max)
+    else if (typeof years === 'number' && years > 0)
+        return getYearsByNum(years)
+    else if(typeof years !== 'number' && 'min' in years) {
+        let n = 0, min = 0
+        let ymin = getYearMon(years.min)
+        let ymax = getYearMon(years.max)
         if ((typeof ymin.year === 'number') && ymin.year > __MIN_VALID_YEAR)
             min = ymin.year
         if ((typeof ymax.year === 'number') && ymax.year >= min)
             n = ymax.year
+
+        
         let arr = getYearsByNum(n, min)
             , last = arr.length - 1
         if (last >= 0) {
@@ -66,14 +71,14 @@ function getYearArray(years: Years) {
         }
         return arr
     }
-    else if (typeof years === 'number' && years > 0)
-        return getYearsByNum(years)
+    
     else
         return getYearsByNum(5)
 }
 
 type Month = {year: number, month: number}
-type Years = Array<number> | number | Month | {min: Month, max: Month}
+type MinMaxMonth = {min: Month, max: Month}
+type Years = Array<number> | number | MinMaxMonth
 
 type Range = {
     from: Month,
@@ -83,16 +88,16 @@ type Language = Array<string> | {from: string, to: string, months: Array<string>
 export interface MonthPickerProps {
     years: Years;
     value: Month;
-    range: Range;
-    lang: Language;
-    onChange: (year: number, month: number, index: number) => void;
-    onYearChange: (year: number) => void;
-    onShow: () => void;
-    onDismiss: (value: Month) => void;
-    onClickAway: (e: Event) => void;
-    theme: 'light' | 'dark';
-    show: boolean;
-    className: string;
+    range?: Range;
+    lang?: Language;
+    onChange?: (year: number, month: number, index: number) => void;
+    onYearChange?: (year: number) => void;
+    onShow?: () => void;
+    onDismiss?: (value: Month) => void;
+    onClickAway?: (e: Event) => void;
+    theme?: 'light' | 'dark';
+    show?: boolean;
+    className?: string;
 }
 interface State {
     values: any;
@@ -225,23 +230,23 @@ export default class MonthPicker extends React.Component<MonthPickerProps, State
 
     optionPad(padIndex: number): JSX.Element {
         let values = this.state.values
-            , value = values[padIndex]
-            , labelYears = this.state.labelYears
-            , labelYear = labelYears[padIndex] = labelYears[padIndex] || value.year
-            , ymArr = this.state.years
-            , lang = this.props.lang || []
-            , months =  Array.isArray(lang) ? lang : (Array.isArray(lang.months) ? lang.months : [])
-            , prevCss = '', nextCss = ''
-            , yearMaxIdx = ymArr.length - 1
-            , yearIdx = this.state.yearIndexes[padIndex]//yearMaxIdx
+        let value = values[padIndex]
+        let labelYears = this.state.labelYears
+        let labelYear = labelYears[padIndex] = labelYears[padIndex] || value.year
+        let ymArr = this.state.years
+        let lang = this.props.lang || []
+        let months =  Array.isArray(lang) ? lang : (Array.isArray(lang.months) ? lang.months : [])
+        let prevCss = '', nextCss = ''
+        let yearMaxIdx = ymArr.length - 1
+        let yearIdx = this.state.yearIndexes[padIndex]//yearMaxIdx
 
         if (yearIdx === 0) prevCss = 'disable'
         if (yearIdx === yearMaxIdx) nextCss = 'disable'
 
         let yearActive = (labelYear === value.year)
-            , atMinYear = (labelYear === ymArr[0].year)
-            , atMaxYear = (labelYear === ymArr[yearMaxIdx].year)
-            , otherValue = false
+        let atMinYear = (labelYear === ymArr[0].year)
+        let atMaxYear = (labelYear === ymArr[yearMaxIdx].year)
+        let otherValue: any = false
         if (values.length > 1) {
             otherValue = values[1 - padIndex]
         }
@@ -317,7 +322,7 @@ export default class MonthPicker extends React.Component<MonthPickerProps, State
             <div className={["month-picker", this.props.className].join(' ')}>
                 {this.props.children}
                 <div className={["rmp-container", "rmp-table", this.props.className, (this.state.showed ? "show" : '')].join(' ')}>
-                    <Tappable className="rmp-overlay" onTap={this._handleOverlayTouchTap} />
+                    <div className="rmp-overlay" onTouchEnd={this._handleOverlayTouchTap} />
                     <div className="rmp-cell">
                         <div className={["rmp-popup", popupClass , this.props.theme, (this.state.showed ? "show" : '')].join(' ')}>
                             {pads}
